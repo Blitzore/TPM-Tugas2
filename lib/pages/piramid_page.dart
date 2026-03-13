@@ -6,93 +6,265 @@ class PiramidPage extends StatefulWidget {
   const PiramidPage({super.key});
 
   @override
-  _PiramidPageState createState() => _PiramidPageState();
+  State<PiramidPage> createState() => _PiramidPageState();
 }
 
 class _PiramidPageState extends State<PiramidPage> {
   final TextEditingController _sisiController = TextEditingController();
   final TextEditingController _tinggiController = TextEditingController();
-  String _hasilVolume = "0";
-  String _hasilLuas = "0";
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  
+  String _tipeKalkulasi = 'Volume';
+  
+  // State manajemen multi-satuan
+  String _satuanSisi = 'cm';
+  String _satuanTinggi = 'cm';
+  String _satuanHasil = 'cm';
+  
+  String _hasil = "-";
+  String _labelHasil = "Hasil";
+
+  // Mesin Standardisasi Unit (Konversi ke Meter sebagai patokan absolut)
+  double _convertToMeters(double value, String unit) {
+    switch (unit) {
+      case 'mm': return value / 1000;
+      case 'cm': return value / 100;
+      case 'km': return value * 1000;
+      case 'm': 
+      default: return value;
+    }
+  }
+
+  // Mesin Ekstraksi Unit (Konversi dari Meter ke Satuan Target)
+  double _convertFromMeters(double valueInMeters, String targetUnit, bool isVolume) {
+    double factor = 1.0;
+    switch (targetUnit) {
+      case 'mm': factor = 1000.0; break;
+      case 'cm': factor = 100.0; break;
+      case 'km': factor = 0.001; break;
+      case 'm': 
+      default: factor = 1.0; break;
+    }
+    
+    // Jika Volume, faktornya pangkat 3. Jika Luas, pangkat 2.
+    return isVolume ? valueInMeters * (factor * factor * factor) : valueInMeters * (factor * factor);
+  }
 
   void _hitung() {
-    if (_sisiController.text.trim().isEmpty || _tinggiController.text.trim().isEmpty) {
-      setState(() {
-        _hasilVolume = "Silahkan isi semua bagian";
-        _hasilLuas = "Silahkan isi semua bagian";
-      });
-      return;
+    FocusScope.of(context).unfocus(); 
+    
+    if (_formKey.currentState!.validate()) {
+      String inputSisi = _sisiController.text.replaceAll(',', '.');
+      String inputTinggi = _tinggiController.text.replaceAll(',', '.');
+
+      double? sisiRaw = double.tryParse(inputSisi);
+      double? tinggiRaw = double.tryParse(inputTinggi);
+
+      if (sisiRaw != null && tinggiRaw != null) {
+        setState(() {
+          // 1. Paksa semua input menjadi Meter
+          double sisiM = _convertToMeters(sisiRaw, _satuanSisi);
+          double tinggiM = _convertToMeters(tinggiRaw, _satuanTinggi);
+
+          if (_tipeKalkulasi == 'Volume') {
+            // 2. Kalkulasi menggunakan hitungan standar Meter Kubik
+            double volM3 = MathLogic.hitungVolumePiramid(sisiM, tinggiM);
+            // 3. Konversi kembali ke satuan yang diinginkan User
+            double finalVol = _convertFromMeters(volM3, _satuanHasil, true);
+            
+            _hasil = "${MathLogic.formatCleanDouble(finalVol)} $_satuanHasil³";
+            _labelHasil = "Volume Piramida";
+          } else {
+            // 2. Kalkulasi menggunakan hitungan standar Meter Persegi
+            double luasM2 = MathLogic.hitungLuasPermukaanPiramid(sisiM, tinggiM);
+            // 3. Konversi kembali ke satuan yang diinginkan User
+            double finalLuas = _convertFromMeters(luasM2, _satuanHasil, false);
+            
+            _hasil = "${MathLogic.formatCleanDouble(finalLuas)} $_satuanHasil²";
+            _labelHasil = "Luas Permukaan Piramida";
+          }
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text("Input tidak valid. Pastikan hanya memasukkan angka."),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
+  }
 
-    String inputSisi = _sisiController.text.replaceAll(',', '.');
-    String inputTinggi = _tinggiController.text.replaceAll(',', '.');
-
-    double? sisi = double.tryParse(inputSisi);
-    double? tinggi = double.tryParse(inputTinggi);
-
-    if (sisi != null && tinggi != null) {
-      setState(() {
-        _hasilVolume = MathLogic.formatCleanDouble(MathLogic.hitungVolumePiramid(sisi, tinggi));
-        _hasilLuas = MathLogic.formatCleanDouble(MathLogic.hitungLuasPermukaanPiramid(sisi, tinggi));
-      });
-    } else {
-      setState(() {
-        _hasilVolume = "Invalid";
-        _hasilLuas = "Invalid";
-      });
-    }
+  // Helper UI untuk membuat dropdown satuan di dalam TextField
+  Widget _buildInlineUnitDropdown(String value, ValueChanged<String?> onChanged) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 12.0, left: 8.0),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          icon: Icon(Icons.keyboard_arrow_down, color: Theme.of(context).colorScheme.primary),
+          items: ['mm', 'cm', 'm', 'km'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          onChanged: onChanged,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary, 
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Luas & Volume Piramida")),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      appBar: AppBar(title: const Text("Kalkulator Piramida")),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _sisiController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-              ],
-              decoration: const InputDecoration(
-                labelText: "Panjang Sisi Alas", 
-                filled: true, 
-                fillColor: Colors.white
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 5, // Ubah proporsi agar sisi kiri mendapat ruang lebih besar
+                      child: DropdownButtonFormField<String>(
+                        isExpanded: true, // INI KUNCI UNTUK MENCEGAH OVERFLOW
+                        value: _tipeKalkulasi,
+                        decoration: const InputDecoration(
+                          labelText: "Mode Kalkulasi",
+                          prefixIcon: Icon(Icons.science_outlined),
+                        ),
+                        items: ['Volume', 'Luas Permukaan']
+                            .map((e) => DropdownMenuItem(
+                                  value: e, 
+                                  child: Text(e, overflow: TextOverflow.ellipsis), // Potong teks jika kepanjangan
+                                ))
+                            .toList(),
+                        onChanged: (val) => setState(() {
+                          _tipeKalkulasi = val!;
+                          _hasil = "-"; 
+                        }),
+                      ),
+                    ),
+                    const SizedBox(width: 12), // Perkecil jarak tengah
+                    Expanded(
+                      flex: 4, 
+                      child: DropdownButtonFormField<String>(
+                        isExpanded: true, // WAJIB ADA DI SINI JUGA
+                        value: _satuanHasil,
+                        decoration: const InputDecoration(labelText: "Satuan Hasil"),
+                        items: ['mm', 'cm', 'm', 'km']
+                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .toList(),
+                        onChanged: (val) => setState(() {
+                          _satuanHasil = val!;
+                          _hasil = "-"; 
+                        }),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _tinggiController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-              ],
-              decoration: const InputDecoration(
-                labelText: "Tinggi Piramida", 
-                filled: true, 
-                fillColor: Colors.white
+            
+            const SizedBox(height: 16),
+            
+            // --- KARTU INPUT DIMENSI ---
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.change_history, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 10),
+                          const Text(
+                            "Dimensi Ukuran", 
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+                          ),
+                        ],
+                      ),
+                      const Divider(height: 24),
+                      
+                      TextFormField(
+                        controller: _sisiController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        textInputAction: TextInputAction.next,
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+                        decoration: InputDecoration(
+                          labelText: "Panjang Sisi Alas",
+                          prefixIcon: const Icon(Icons.straighten),
+                          suffixIcon: _buildInlineUnitDropdown(_satuanSisi, (val) => setState(() => _satuanSisi = val!)),
+                        ),
+                        validator: (value) => value == null || value.trim().isEmpty ? "Wajib diisi" : null,
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      TextFormField(
+                        controller: _tinggiController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (_) => _hitung(),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+                        decoration: InputDecoration(
+                          labelText: "Tinggi Piramida",
+                          prefixIcon: const Icon(Icons.height),
+                          suffixIcon: _buildInlineUnitDropdown(_satuanTinggi, (val) => setState(() => _satuanTinggi = val!)),
+                        ),
+                        validator: (value) => value == null || value.trim().isEmpty ? "Wajib diisi" : null,
+                      ),
+                      const SizedBox(height: 24),
+                      
+                      ElevatedButton.icon(
+                        onPressed: _hitung,
+                        icon: const Icon(Icons.calculate),
+                        label: Text("HITUNG ${_tipeKalkulasi.toUpperCase()}"),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _hitung, 
-              child: const Text("Kalkulasi")
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Volume: $_hasilVolume", 
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey)
-            ),
-            const SizedBox(height: 5),
-            Text(
-              "Luas Permukaan: $_hasilLuas", 
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey)
+            
+            const SizedBox(height: 24),
+            
+            // --- KARTU HASIL ---
+            Card(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    Text(
+                      _labelHasil,
+                      style: TextStyle(
+                        fontSize: 14, 
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.7)
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SelectableText(
+                      _hasil, 
+                      style: TextStyle(
+                        fontSize: 32, 
+                        fontWeight: FontWeight.bold, 
+                        color: Theme.of(context).colorScheme.primary,
+                        letterSpacing: -1.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
