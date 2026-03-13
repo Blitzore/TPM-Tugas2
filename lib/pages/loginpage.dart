@@ -18,10 +18,10 @@ class _LoginPageState extends State<LoginPage> {
       String email = _emailController.text;
       String password = _passwordController.text;
 
-      if ((email == "novan" && password == "123220202") ||
-          (email == "arya" && password == "123220188") ||
-          (email == "ajeng" && password == "123220060") ||
-          (email == "putri" && password == "123220182")) {
+      if ((email == "gilang" && password == "123230060") ||
+          (email == "ahmad" && password == "123230077") ||
+          (email == "remon" && password == "123230129") ||
+          (email == "laksa" && password == "123230235")) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Homepages()),
@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.blue.shade100,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -56,14 +56,14 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.lock_outline, size: 60, color: Colors.blueGrey),
+                    Icon(Icons.lock_outline, size: 60, color: Colors.blue),
                     SizedBox(height: 20),
                     Text(
                       "Login",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey,
+                        color: Colors.blue,
                       ),
                     ),
                     SizedBox(height: 20),
@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueGrey,
+                        backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

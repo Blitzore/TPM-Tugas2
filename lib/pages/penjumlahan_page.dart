@@ -30,10 +30,12 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
 
   void hitungJumlah() {
     setState(() {
-      if (angka1Controller.text.length > 15 || angka2Controller.text.length > 15) {
+      if (angka1Controller.text.length > 15 ||
+          angka2Controller.text.length > 15) {
         errorMessage = "Maksimal 15 karakter untuk setiap input";
         hasil = 0;
-      } else if (!RegExp(r'^\d+$').hasMatch(angka1Controller.text) || !RegExp(r'^\d+$').hasMatch(angka2Controller.text)) {
+      } else if (!RegExp(r'^\d+$').hasMatch(angka1Controller.text) ||
+          !RegExp(r'^\d+$').hasMatch(angka2Controller.text)) {
         errorMessage = "Masukkan hanya angka";
         hasil = 0;
       } else {
@@ -61,14 +63,17 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
             IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepages()));
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Homepages()),
+                );
               },
             ),
             SizedBox(width: 10),
-            Text("Penjumlahan"),
+            Text("Penjumlahan", style: TextStyle(color: Colors.white)),
           ],
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
@@ -100,18 +105,25 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
             if (errorMessage.isNotEmpty)
               Text(
                 errorMessage,
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: hitungJumlah,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
+                backgroundColor: Colors.blue,
                 padding: EdgeInsets.symmetric(vertical: 15),
               ),
               child: Text(
                 "HITUNG",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             SizedBox(height: 30.0),
@@ -130,10 +142,7 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
               ),
               child: Column(
                 children: [
-                  Text(
-                    "Hasil Penjumlahan:",
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  Text("Hasil Penjumlahan:", style: TextStyle(fontSize: 16)),
                   SizedBox(height: 10.0),
                   Text(
                     "$hasil",

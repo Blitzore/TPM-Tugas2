@@ -33,14 +33,20 @@ class _NumberInputPageState extends State<NumberInputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple[50],
+      backgroundColor: Colors.blue.shade100,
       appBar: AppBar(
-        title: Text("Deteksi Jumlah Angka"),
-        backgroundColor: Colors.deepPurple,
+        title: Text(
+          "Hitung Jumlah Angka",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Homepages()));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Homepages()),
+            );
           },
         ),
       ),
@@ -69,7 +75,7 @@ class _NumberInputPageState extends State<NumberInputPage> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
+                color: Colors.blue,
               ),
             ),
           ],

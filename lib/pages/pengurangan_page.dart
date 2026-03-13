@@ -69,7 +69,7 @@ class _PenguranganPageState extends State<PenguranganPage> {
             style: TextStyle(fontSize: 24, color: Colors.white)),
           ],
         ),
-        backgroundColor: Color.fromARGB(255, 1, 45, 82),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
@@ -107,7 +107,7 @@ class _PenguranganPageState extends State<PenguranganPage> {
             ElevatedButton(
               onPressed: hitungPengurangan,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 1, 45, 82),
+                backgroundColor: Colors.blue,
                 padding: EdgeInsets.symmetric(vertical: 15),
               ),
               child: Text(
@@ -119,7 +119,7 @@ class _PenguranganPageState extends State<PenguranganPage> {
             Container(
               padding: EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: Colors.orange.shade100,
+                color: Colors.blue.shade100,
                 borderRadius: BorderRadius.circular(10.0),
                 boxShadow: [
                   BoxShadow(
@@ -141,7 +141,7 @@ class _PenguranganPageState extends State<PenguranganPage> {
                     style: TextStyle(
                       fontSize: 32.0,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 1, 45, 82),
+                      color: Colors.blue.shade800,
                     ),
                   ),
                 ],
