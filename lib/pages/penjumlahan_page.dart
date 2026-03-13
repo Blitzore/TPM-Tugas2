@@ -1,159 +1,92 @@
 import 'package:flutter/material.dart';
-import 'package:tugas1/pages/homepage.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: PenjumlahanPage(),
-    );
-  }
-}
+import 'package:flutter/services.dart';
+import 'package:tugas1/utils/math_logic.dart';
 
 class PenjumlahanPage extends StatefulWidget {
-  const PenjumlahanPage({Key? key}) : super(key: key);
+  const PenjumlahanPage({super.key});
 
   @override
   _PenjumlahanPageState createState() => _PenjumlahanPageState();
 }
 
 class _PenjumlahanPageState extends State<PenjumlahanPage> {
-  TextEditingController angka1Controller = TextEditingController();
-  TextEditingController angka2Controller = TextEditingController();
-  int hasil = 0;
-  String errorMessage = "";
+  final TextEditingController _angka1Controller = TextEditingController();
+  final TextEditingController _angka2Controller = TextEditingController();
+  String _hasil = "0";
 
-  void hitungJumlah() {
+  void _hitung() {
+    if (_angka1Controller.text.trim().isEmpty || _angka2Controller.text.trim().isEmpty) {
+      setState(() {
+        _hasil = "Silahkan isi semua bagian";
+      });
+      return;
+    }
+
+    // Ubah koma menjadi titik untuk standarisasi parsing
+    String input1 = _angka1Controller.text.replaceAll(',', '.');
+    String input2 = _angka2Controller.text.replaceAll(',', '.');
+
+    // Langsung lemparkan teks mentahnya ke MathLogic!
+    String result = MathLogic.add(input1, input2);
+
     setState(() {
-      if (angka1Controller.text.length > 15 ||
-          angka2Controller.text.length > 15) {
-        errorMessage = "Maksimal 15 karakter untuk setiap input";
-        hasil = 0;
-      } else if (!RegExp(r'^\d+$').hasMatch(angka1Controller.text) ||
-          !RegExp(r'^\d+$').hasMatch(angka2Controller.text)) {
-        errorMessage = "Masukkan hanya angka";
-        hasil = 0;
+      if (result == "Error") {
+        _hasil = "Input tidak valid";
       } else {
-        int angka1 = int.tryParse(angka1Controller.text) ?? 0;
-        int angka2 = int.tryParse(angka2Controller.text) ?? 0;
-        hasil = angka1 + angka2;
-        errorMessage = "";
+        _hasil = result;
       }
     });
   }
 
   @override
-  void dispose() {
-    angka1Controller.dispose();
-    angka2Controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Homepages()),
-                );
-              },
-            ),
-            SizedBox(width: 10),
-            Text("Penjumlahan", style: TextStyle(color: Colors.white)),
-          ],
-        ),
-        backgroundColor: Colors.blue,
-      ),
+      appBar: AppBar(title: const Text("Penjumlahan")),
       body: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: angka1Controller,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Angka Pertama",
-                border: OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.grey[200],
+              controller: _angka1Controller,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                // Regex lebih longgar untuk menghindari bug keyboard, 
+                // mengizinkan angka, titik, dan koma.
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+              ],
+              decoration: const InputDecoration(
+                labelText: "Angka Pertama", 
+                filled: true, 
+                fillColor: Colors.white
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 10),
+            
             TextField(
-              controller: angka2Controller,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Angka Kedua",
-                border: OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.grey[200],
+              controller: _angka2Controller,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+              ],
+              decoration: const InputDecoration(
+                labelText: "Angka Kedua", 
+                filled: true, 
+                fillColor: Colors.white
               ),
             ),
-            SizedBox(height: 10.0),
-            if (errorMessage.isNotEmpty)
-              Text(
-                errorMessage,
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20),
+            
             ElevatedButton(
-              onPressed: hitungJumlah,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(vertical: 15),
-              ),
-              child: Text(
-                "HITUNG",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              onPressed: _hitung, 
+              child: const Text("Hitung Penjumlahan")
             ),
-            SizedBox(height: 30.0),
-            Container(
-              padding: EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade100,
-                borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 5.0,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Text("Hasil Penjumlahan:", style: TextStyle(fontSize: 16)),
-                  SizedBox(height: 10.0),
-                  Text(
-                    "$hasil",
-                    style: TextStyle(
-                      fontSize: 32.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade800,
-                    ),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 20),
+            
+            Text(
+              "Hasil: $_hasil", 
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue)
             ),
           ],
         ),
