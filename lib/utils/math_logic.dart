@@ -1,19 +1,78 @@
 import 'dart:math';
 import 'package:decimal/decimal.dart';
 class MathLogic {
+  
+
   // --- Logika Ganjil Genap & Prima ---
-  static bool isPrime(int number) {
-    if (number <= 1) return false;
-    if (number == 2) return true;
-    if (number % 2 == 0) return false;
-    for (int i = 3; i <= number ~/ 2; i += 2) {
-      if (number % i == 0) return false;
-    }
-    return true;
+  static String checkParity(String input) {
+    if (input.isEmpty) return "-";
+    int lastDigit = int.parse(input[input.length - 1]);
+    return lastDigit % 2 == 0 ? "Genap" : "Ganjil";
   }
 
-  static String checkParity(int number) {
-    return number % 2 == 0 ? "Genap" : "Ganjil";
+  // --- Mesin Kriptografi: Miller-Rabin Primality Test ---
+  static String checkPrime(String input) {
+    BigInt? number = BigInt.tryParse(input);
+    if (number == null || number <= BigInt.one) return "Bukan Prima";
+    if (number == BigInt.two || number == BigInt.from(3)) return "Prima";
+    if (number.isEven) return "Bukan Prima"; // Filter angka genap raksasa dalam O(1)
+
+    // Tidak ada lagi batasan digit. Mesin ini sanggup menelan ratusan digit.
+    // Kita gunakan Miller-Rabin dengan k=10 (cukup akurat untuk tugas kampus)
+    bool isPrime = _millerRabinTest(number, 10);
+    return isPrime ? "Prima" : "Bukan Prima";
+  }
+
+  // Algoritma tingkat lanjut untuk mengatasi angka sandi raksasa
+  static bool _millerRabinTest(BigInt n, int k) {
+    BigInt d = n - BigInt.one;
+    int s = 0;
+    
+    while (d.isEven) {
+      d = d >> 1;
+      s++;
+    }
+
+    for (int i = 0; i < k; i++) {
+      // Menggunakan basis kecil (2, 3, 4...) untuk pengujian. 
+      // Cukup kuat untuk menggagalkan bilangan komposit (bukan prima).
+      BigInt a = BigInt.from(2 + i); 
+      if (a >= n - BigInt.one) break;
+
+      // Operasi perpangkatan modular (kunci utama kriptografi yang dieksekusi sangat cepat)
+      BigInt x = a.modPow(d, n);
+      
+      if (x == BigInt.one || x == n - BigInt.one) continue;
+
+      bool composite = true;
+      for (int r = 1; r < s; r++) {
+        x = x.modPow(BigInt.two, n);
+        if (x == n - BigInt.one) {
+          composite = false;
+          break;
+        }
+      }
+      if (composite) return false;
+    }
+    return true; // Probabilitas prima 99.999%
+  }
+
+  // --- Logika Tambahan untuk Frekuensi Angka ---
+  static Map<String, int> getDigitFrequency(String input) {
+    Map<String, int> freq = {};
+    for (int i = 0; i < input.length; i++) {
+      String char = input[i];
+      if (RegExp(r'[0-9]').hasMatch(char)) {
+        freq[char] = (freq[char] ?? 0) + 1;
+      }
+    }
+    // Urutkan key dari 0-9
+    var sortedKeys = freq.keys.toList()..sort();
+    Map<String, int> sortedFreq = {};
+    for (var k in sortedKeys) {
+      sortedFreq[k] = freq[k]!;
+    }
+    return sortedFreq;
   }
 
   // --- Logika Hitung Jumlah Angka ---
