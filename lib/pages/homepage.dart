@@ -1,11 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tugas1/pages/loginpage.dart';
-import 'package:tugas1/pages/ganjilgenap.dart';
-import 'package:tugas1/pages/penjumlahan_page.dart';
-import 'package:tugas1/pages/pengurangan_page.dart';
-import 'package:tugas1/pages/jumlah_angka.dart'; 
-import 'package:tugas1/pages/stopwatch_page.dart';
-import 'package:tugas1/pages/piramid_page.dart';
 
 class Homepages extends StatelessWidget {
   const Homepages({super.key});
@@ -13,39 +6,25 @@ class Homepages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F6), 
-      // AppBar dihilangkan agar ruang layar lebih maksimal
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20.0),
-          physics: const BouncingScrollPhysics(), // Memberikan efek memantul saat mentok
+          physics: const BouncingScrollPhysics(),
           children: [
-            // 1. Teks Judul Dashboard Utama
             Container(
               margin: const EdgeInsets.only(bottom: 20, top: 10),
               child: const Text(
                 "Dashboard Utama",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey, // Warna Indigo gelap
-                  letterSpacing: 1.2,
-                ),
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blueGrey, letterSpacing: 1.2),
               ),
             ),
-            
-            // 2. Kotak Khusus Anggota Kelompok
             Container(
               padding: const EdgeInsets.all(20),
               margin: const EdgeInsets.only(bottom: 25),
               decoration: BoxDecoration(
+                color: Colors.blue, // Menambahkan warna background agar teks putih terlihat
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
+                boxShadow: const [BoxShadow(color: Colors.blue, offset: Offset(0, 5))],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,10 +33,7 @@ class Homepages extends StatelessWidget {
                     children: const [
                       Icon(Icons.group, color: Colors.white70, size: 20),
                       SizedBox(width: 10),
-                      Text(
-                        "Anggota Kelompok",
-                        style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
+                      Text("Anggota Kelompok", style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w600)),
                     ],
                   ),
                   const Divider(color: Colors.white30, height: 20, thickness: 1),
@@ -68,38 +44,28 @@ class Homepages extends StatelessWidget {
                 ],
               ),
             ),
-            
-            // 3. Label Daftar Menu
-            const Text(
-              "Menu Aplikasi",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-            ),
+            const Text("Menu Aplikasi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
             const SizedBox(height: 15),
             
-            // 4. Daftar Kotak Menu (List Item)
-            _buildListItem(context, Icons.add_circle_outline, "Penjumlahan", Colors.blue, PenjumlahanPage()),
-            _buildListItem(context, Icons.remove_circle_outline, "Pengurangan", Colors.blue, PenguranganPage()),
-            _buildListItem(context, Icons.rule, "Ganjil Genap & Prima", Colors.blue, CheckEvenOddPage()),
-            _buildListItem(context, Icons.calculate_outlined, "Total Angka Input", Colors.blue, NumberInputPage()),
-            _buildListItem(context, Icons.timer_outlined, "Stopwatch", Colors.blue, StopwatchPage()),
-            _buildListItem(context, Icons.change_history, "Luas & Volume Piramid", Colors.blue, PiramidPage()),
+            // PERUBAHAN: Menggunakan Named Routes
+            _buildListItem(context, Icons.add_circle_outline, "Penjumlahan", Colors.blue, '/penjumlahan'),
+            _buildListItem(context, Icons.remove_circle_outline, "Pengurangan", Colors.blue, '/pengurangan'),
+            _buildListItem(context, Icons.rule, "Ganjil Genap & Prima", Colors.blue, '/ganjil-genap'),
+            _buildListItem(context, Icons.calculate_outlined, "Total Angka Input", Colors.blue, '/jumlah-angka'),
+            _buildListItem(context, Icons.timer_outlined, "Stopwatch", Colors.blue, '/stopwatch'),
+            _buildListItem(context, Icons.change_history, "Luas & Volume Piramid", Colors.blue, '/piramid'),
             
             const SizedBox(height: 20),
-            
-            // 5. Kotak Tombol Logout di paling bawah ListView
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                // PERUBAHAN: Logout menggunakan route
+                Navigator.pushReplacementNamed(context, '/login');
               },
-              icon: const Icon(Icons.logout, color: Colors.white),
-              label: const Text("Logout", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+              icon: const Icon(Icons.logout),
+              label: const Text("Logout", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[600],
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 3,
               ),
             ),
             const SizedBox(height: 10),
@@ -109,7 +75,6 @@ class Homepages extends StatelessWidget {
     );
   }
 
-  // Widget tambahan untuk merapikan baris nama dan NIM
   Widget _buildMemberText(String name, String nim) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -123,13 +88,14 @@ class Homepages extends StatelessWidget {
     );
   }
 
-  // Desain kotak menu
-  Widget _buildListItem(BuildContext context, IconData icon, String title, Color color, Widget page) {
+  // PERUBAHAN: Parameter menerima String routeName
+  Widget _buildListItem(BuildContext context, IconData icon, String title, Color color, String routeName) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: InkWell(
         onTap: () {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => page));
+          // PERUBAHAN: Gunakan push, agar ada tombol back otomatis
+          Navigator.pushNamed(context, routeName);
         },
         borderRadius: BorderRadius.circular(15),
         child: Container(
@@ -150,22 +116,12 @@ class Homepages extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
                 child: Icon(icon, size: 28, color: color),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
-                  ),
-                ),
+                child: Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[800])),
               ),
               Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
             ],

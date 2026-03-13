@@ -1,8 +1,10 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:tugas1/pages/homepage.dart';
+import 'package:flutter/services.dart';
+import 'package:tugas1/utils/math_logic.dart';
 
 class PiramidPage extends StatefulWidget {
+  const PiramidPage({super.key});
+
   @override
   _PiramidPageState createState() => _PiramidPageState();
 }
@@ -10,80 +12,87 @@ class PiramidPage extends StatefulWidget {
 class _PiramidPageState extends State<PiramidPage> {
   final TextEditingController _sisiController = TextEditingController();
   final TextEditingController _tinggiController = TextEditingController();
-  String _result = "";
+  String _hasilVolume = "0";
+  String _hasilLuas = "0";
 
-  void _hitungPiramid() {
-    final double? sisi = double.tryParse(_sisiController.text);
-    final double? tinggi = double.tryParse(_tinggiController.text);
-
-    if (sisi == null || tinggi == null) {
+  void _hitung() {
+    if (_sisiController.text.trim().isEmpty || _tinggiController.text.trim().isEmpty) {
       setState(() {
-        _result = "Masukkan angka yang valid";
+        _hasilVolume = "Silahkan isi semua bagian";
+        _hasilLuas = "Silahkan isi semua bagian";
       });
       return;
     }
 
-    double volume = (1 / 3) * (sisi * sisi) * tinggi;
-    double tinggiSegitiga = sqrt(pow(sisi / 2, 2) + pow(tinggi, 2));
-    double luasPermukaan = (sisi * sisi) + (4 * (0.5 * sisi * tinggiSegitiga));
+    String inputSisi = _sisiController.text.replaceAll(',', '.');
+    String inputTinggi = _tinggiController.text.replaceAll(',', '.');
 
-    setState(() {
-      _result =
-          "Volume: ${volume.toStringAsFixed(2)}\nLuas Permukaan: ${luasPermukaan.toStringAsFixed(2)}";
-    });
+    double? sisi = double.tryParse(inputSisi);
+    double? tinggi = double.tryParse(inputTinggi);
+
+    if (sisi != null && tinggi != null) {
+      setState(() {
+        _hasilVolume = MathLogic.formatCleanDouble(MathLogic.hitungVolumePiramid(sisi, tinggi));
+        _hasilLuas = MathLogic.formatCleanDouble(MathLogic.hitungLuasPermukaanPiramid(sisi, tinggi));
+      });
+    } else {
+      setState(() {
+        _hasilVolume = "Invalid";
+        _hasilLuas = "Invalid";
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Luas & Volume Piramid",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.blue,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed:
-              () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => Homepages()),
-              ),
-        ),
-      ),
+      appBar: AppBar(title: const Text("Luas & Volume Piramida")),
       body: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
               controller: _sisiController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Panjang Sisi Alas",
-                border: OutlineInputBorder(),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+              ],
+              decoration: const InputDecoration(
+                labelText: "Panjang Sisi Alas", 
+                filled: true, 
+                fillColor: Colors.white
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 10),
             TextField(
               controller: _tinggiController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Tinggi Piramid",
-                border: OutlineInputBorder(),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+              ],
+              decoration: const InputDecoration(
+                labelText: "Tinggi Piramida", 
+                filled: true, 
+                fillColor: Colors.white
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _hitungPiramid,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              child: Text("Hitung", style: TextStyle(color: Colors.white)),
+              onPressed: _hitung, 
+              child: const Text("Kalkulasi")
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
-              _result,
+              "Volume: $_hasilVolume", 
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey)
+            ),
+            const SizedBox(height: 5),
+            Text(
+              "Luas Permukaan: $_hasilLuas", 
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey)
             ),
           ],
         ),

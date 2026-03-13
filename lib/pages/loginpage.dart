@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tugas1/pages/homepage.dart';
+import 'package:tugas1/utils/auth_logic.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,28 +15,20 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      String email = _emailController.text;
-      String password = _passwordController.text;
+      bool isSuccess = AuthLogic.login(_emailController.text, _passwordController.text);
 
-      if ((email == "gilang" && password == "123230060") ||
-          (email == "ahmad" && password == "123230077") ||
-          (email == "remon" && password == "123230129") ||
-          (email == "laksa" && password == "123230235")) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Homepages()),
-        );
+      if (isSuccess) {
+        Navigator.pushReplacementNamed(context, '/home');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Email atau Password salah"),
+          const SnackBar(
+            content: Text("Username atau Password salah"),
             backgroundColor: Colors.redAccent,
           ),
         );
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,9 +37,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             elevation: 5,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -56,66 +46,38 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.lock_outline, size: 60, color: Colors.blue),
-                    SizedBox(height: 20),
-                    Text(
-                      "Login",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    SizedBox(height: 20),
+                    const Icon(Icons.lock_outline, size: 60, color: Colors.blue),
+                    const SizedBox(height: 20),
+                    const Text("Login", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue)),
+                    const SizedBox(height: 20),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person),
+                        prefixIcon: const Icon(Icons.person),
                         labelText: "Username",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Username tidak boleh kosong";
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.isEmpty ? "Username tidak boleh kosong" : null,
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock),
                         labelText: "Password",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Password tidak boleh kosong";
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.isEmpty ? "Password tidak boleh kosong" : null,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                       ),
-                      child: Text(
-                        "Login",
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
+                      child: const Text("Login", style: TextStyle(fontSize: 18)),
                     ),
                   ],
                 ),
