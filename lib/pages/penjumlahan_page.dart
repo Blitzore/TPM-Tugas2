@@ -23,14 +23,13 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
       String input1 = _angka1Controller.text.replaceAll(',', '.');
       String input2 = _angka2Controller.text.replaceAll(',', '.');
 
-      // Menggunakan presisi absolut dari package decimal milikmu
       String result = MathLogic.add(input1, input2);
 
       setState(() {
         if (result == "Error") {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text("Input tidak valid. Pastikan hanya memasukkan angka."),
+              content: const Text("Input tidak valid."),
               backgroundColor: Theme.of(context).colorScheme.error,
               behavior: SnackBarBehavior.floating,
             ),
@@ -71,7 +70,6 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
                         ],
                       ),
                       const Divider(height: 30),
-                      
                       TextFormField(
                         controller: _angka1Controller,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -81,12 +79,9 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
                           labelText: "Angka Pertama",
                           prefixIcon: Icon(Icons.looks_one_outlined),
                         ),
-                        validator: (value) => value == null || value.trim().isEmpty 
-                            ? "Wajib diisi" 
-                            : null,
+                        validator: (value) => value == null || value.trim().isEmpty ? "Wajib diisi" : null,
                       ),
                       const SizedBox(height: 16),
-                      
                       TextFormField(
                         controller: _angka2Controller,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -97,12 +92,9 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
                           labelText: "Angka Kedua",
                           prefixIcon: Icon(Icons.looks_two_outlined),
                         ),
-                        validator: (value) => value == null || value.trim().isEmpty 
-                            ? "Wajib diisi" 
-                            : null,
+                        validator: (value) => value == null || value.trim().isEmpty ? "Wajib diisi" : null,
                       ),
                       const SizedBox(height: 24),
-                      
                       ElevatedButton.icon(
                         onPressed: _hitung,
                         icon: const Icon(Icons.calculate),
@@ -113,9 +105,7 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
                 ),
               ),
             ),
-            
             const SizedBox(height: 24),
-            
             Card(
               color: Theme.of(context).colorScheme.primaryContainer,
               child: Padding(
@@ -127,11 +117,10 @@ class _PenjumlahanPageState extends State<PenjumlahanPage> {
                       style: TextStyle(
                         fontSize: 14, 
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.7)
+                        color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7)
                       ),
                     ),
                     const SizedBox(height: 12),
-                    // Menggunakan SelectableText agar angka raksasa tidak terpotong (ellipsis) dan bisa dicopy
                     SelectableText(
                       _hasil, 
                       style: TextStyle(

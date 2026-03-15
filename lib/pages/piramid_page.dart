@@ -15,16 +15,12 @@ class _PiramidPageState extends State<PiramidPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   
   String _tipeKalkulasi = 'Volume';
-  
-  // State manajemen multi-satuan
   String _satuanSisi = 'cm';
   String _satuanTinggi = 'cm';
   String _satuanHasil = 'cm';
-  
   String _hasil = "-";
   String _labelHasil = "Hasil";
 
-  // Mesin Standardisasi Unit (Konversi ke Meter sebagai patokan absolut)
   double _convertToMeters(double value, String unit) {
     switch (unit) {
       case 'mm': return value / 1000;
@@ -35,7 +31,6 @@ class _PiramidPageState extends State<PiramidPage> {
     }
   }
 
-  // Mesin Ekstraksi Unit (Konversi dari Meter ke Satuan Target)
   double _convertFromMeters(double valueInMeters, String targetUnit, bool isVolume) {
     double factor = 1.0;
     switch (targetUnit) {
@@ -46,40 +41,31 @@ class _PiramidPageState extends State<PiramidPage> {
       default: factor = 1.0; break;
     }
     
-    // Jika Volume, faktornya pangkat 3. Jika Luas, pangkat 2.
-    return isVolume ? valueInMeters * (factor * factor * factor) : valueInMeters * (factor * factor);
+    return isVolume 
+        ? valueInMeters * (factor * factor * factor) 
+        : valueInMeters * (factor * factor);
   }
 
   void _hitung() {
     FocusScope.of(context).unfocus(); 
     
     if (_formKey.currentState!.validate()) {
-      String inputSisi = _sisiController.text.replaceAll(',', '.');
-      String inputTinggi = _tinggiController.text.replaceAll(',', '.');
-
-      double? sisiRaw = double.tryParse(inputSisi);
-      double? tinggiRaw = double.tryParse(inputTinggi);
+      double? sisiRaw = double.tryParse(_sisiController.text.replaceAll(',', '.'));
+      double? tinggiRaw = double.tryParse(_tinggiController.text.replaceAll(',', '.'));
 
       if (sisiRaw != null && tinggiRaw != null) {
         setState(() {
-          // 1. Paksa semua input menjadi Meter
           double sisiM = _convertToMeters(sisiRaw, _satuanSisi);
           double tinggiM = _convertToMeters(tinggiRaw, _satuanTinggi);
 
           if (_tipeKalkulasi == 'Volume') {
-            // 2. Kalkulasi menggunakan hitungan standar Meter Kubik
             double volM3 = MathLogic.hitungVolumePiramid(sisiM, tinggiM);
-            // 3. Konversi kembali ke satuan yang diinginkan User
             double finalVol = _convertFromMeters(volM3, _satuanHasil, true);
-            
             _hasil = "${MathLogic.formatCleanDouble(finalVol)} $_satuanHasil³";
             _labelHasil = "Volume Piramida";
           } else {
-            // 2. Kalkulasi menggunakan hitungan standar Meter Persegi
             double luasM2 = MathLogic.hitungLuasPermukaanPiramid(sisiM, tinggiM);
-            // 3. Konversi kembali ke satuan yang diinginkan User
             double finalLuas = _convertFromMeters(luasM2, _satuanHasil, false);
-            
             _hasil = "${MathLogic.formatCleanDouble(finalLuas)} $_satuanHasil²";
             _labelHasil = "Luas Permukaan Piramida";
           }
@@ -87,7 +73,7 @@ class _PiramidPageState extends State<PiramidPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text("Input tidak valid. Pastikan hanya memasukkan angka."),
+            content: const Text("Input tidak valid."),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -95,7 +81,6 @@ class _PiramidPageState extends State<PiramidPage> {
     }
   }
 
-  // Helper UI untuk membuat dropdown satuan di dalam TextField
   Widget _buildInlineUnitDropdown(String value, ValueChanged<String?> onChanged) {
     return Padding(
       padding: const EdgeInsets.only(right: 12.0, left: 8.0),
@@ -130,19 +115,16 @@ class _PiramidPageState extends State<PiramidPage> {
                 child: Row(
                   children: [
                     Expanded(
-                      flex: 5, // Ubah proporsi agar sisi kiri mendapat ruang lebih besar
+                      flex: 5,
                       child: DropdownButtonFormField<String>(
-                        isExpanded: true, // INI KUNCI UNTUK MENCEGAH OVERFLOW
+                        isExpanded: true,
                         value: _tipeKalkulasi,
                         decoration: const InputDecoration(
                           labelText: "Mode Kalkulasi",
                           prefixIcon: Icon(Icons.science_outlined),
                         ),
                         items: ['Volume', 'Luas Permukaan']
-                            .map((e) => DropdownMenuItem(
-                                  value: e, 
-                                  child: Text(e, overflow: TextOverflow.ellipsis), // Potong teks jika kepanjangan
-                                ))
+                            .map((e) => DropdownMenuItem(value: e, child: Text(e, overflow: TextOverflow.ellipsis)))
                             .toList(),
                         onChanged: (val) => setState(() {
                           _tipeKalkulasi = val!;
@@ -150,11 +132,11 @@ class _PiramidPageState extends State<PiramidPage> {
                         }),
                       ),
                     ),
-                    const SizedBox(width: 12), // Perkecil jarak tengah
+                    const SizedBox(width: 12),
                     Expanded(
                       flex: 4, 
                       child: DropdownButtonFormField<String>(
-                        isExpanded: true, // WAJIB ADA DI SINI JUGA
+                        isExpanded: true,
                         value: _satuanHasil,
                         decoration: const InputDecoration(labelText: "Satuan Hasil"),
                         items: ['mm', 'cm', 'm', 'km']
@@ -170,10 +152,7 @@ class _PiramidPageState extends State<PiramidPage> {
                 ),
               ),
             ),
-            
             const SizedBox(height: 16),
-            
-            // --- KARTU INPUT DIMENSI ---
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -186,14 +165,10 @@ class _PiramidPageState extends State<PiramidPage> {
                         children: [
                           Icon(Icons.change_history, color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 10),
-                          const Text(
-                            "Dimensi Ukuran", 
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
-                          ),
+                          const Text("Dimensi Ukuran", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
                       ),
                       const Divider(height: 24),
-                      
                       TextFormField(
                         controller: _sisiController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -207,7 +182,6 @@ class _PiramidPageState extends State<PiramidPage> {
                         validator: (value) => value == null || value.trim().isEmpty ? "Wajib diisi" : null,
                       ),
                       const SizedBox(height: 16),
-                      
                       TextFormField(
                         controller: _tinggiController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -222,7 +196,6 @@ class _PiramidPageState extends State<PiramidPage> {
                         validator: (value) => value == null || value.trim().isEmpty ? "Wajib diisi" : null,
                       ),
                       const SizedBox(height: 24),
-                      
                       ElevatedButton.icon(
                         onPressed: _hitung,
                         icon: const Icon(Icons.calculate),
@@ -233,10 +206,7 @@ class _PiramidPageState extends State<PiramidPage> {
                 ),
               ),
             ),
-            
             const SizedBox(height: 24),
-            
-            // --- KARTU HASIL ---
             Card(
               color: Theme.of(context).colorScheme.primaryContainer,
               child: Padding(
@@ -248,7 +218,7 @@ class _PiramidPageState extends State<PiramidPage> {
                       style: TextStyle(
                         fontSize: 14, 
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.7)
+                        color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7)
                       ),
                     ),
                     const SizedBox(height: 12),

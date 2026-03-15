@@ -22,7 +22,7 @@ void _checkNumber() {
     
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _angkaDicek = _controller.text; // Ambil teks mentahnya langsung
+        _angkaDicek = _controller.text;
         _hasilParity = MathLogic.checkParity(_angkaDicek);
         _hasilPrima = MathLogic.checkPrime(_angkaDicek);
       });

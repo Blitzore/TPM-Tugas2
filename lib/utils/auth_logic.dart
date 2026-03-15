@@ -1,5 +1,5 @@
 class AuthLogic {
-  // Simulasi tabel database user
+  // Tabel database user
   static final Map<String, String> _mockDatabase = {
     "gilang": "123230060",
     "ahmad": "123230077",

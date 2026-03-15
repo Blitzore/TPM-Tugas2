@@ -33,7 +33,6 @@ class Homepages extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false, 
-      // PERUBAHAN: Sintaks baru untuk Flutter 3.22+
       onPopInvokedWithResult: (bool didPop, Object? result) {
         if (didPop) return;
         _showExitDialog(context); 
@@ -45,9 +44,7 @@ class Homepages extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.redAccent),
               tooltip: 'Logout',
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/login');
-              },
+              onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
             ),
           ],
         ),
@@ -62,8 +59,7 @@ class Homepages extends StatelessWidget {
                   gradient: LinearGradient(
                     colors: [
                       Theme.of(context).colorScheme.primary,
-                      // PERUBAHAN: Sintaks baru pengganti withOpacity untuk Flutter 3.27+
-                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -91,7 +87,6 @@ class Homepages extends StatelessWidget {
                   ],
                 ),
               ),
-              
               const SizedBox(height: 30),
               Text(
                 "Menu Kalkulasi", 
@@ -102,7 +97,6 @@ class Homepages extends StatelessWidget {
                 )
               ),
               const SizedBox(height: 16),
-              
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -114,7 +108,7 @@ class Homepages extends StatelessWidget {
                   _buildMenuCard(context, Icons.add, "Penjumlahan", '/penjumlahan'),
                   _buildMenuCard(context, Icons.remove, "Pengurangan", '/pengurangan'),
                   _buildMenuCard(context, Icons.calculate, "Total Angka", '/jumlah-angka'),
-                  _buildMenuCard(context, Icons.rule, "Ganjil/Genap", '/ganjil-genap'),
+                  _buildMenuCard(context, Icons.rule, "Ganjil/Genap & Prisma", '/ganjil-genap'),
                   _buildMenuCard(context, Icons.change_history, "Piramida", '/piramid'),
                   _buildMenuCard(context, Icons.timer, "Stopwatch", '/stopwatch'),
                 ],
@@ -140,18 +134,17 @@ class Homepages extends StatelessWidget {
     );
   }
 
-Widget _buildMenuCard(BuildContext context, IconData icon, String title, String routeName) {
+  Widget _buildMenuCard(BuildContext context, IconData icon, String title, String routeName) {
     return Material(
       color: Colors.white,
-      // BARIS BORDER RADIUS DI SINI SUDAH DIHAPUS
       elevation: 0,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: Colors.grey.shade200, width: 1),
-        borderRadius: BorderRadius.circular(16), // Radius sekarang diatur penuh oleh shape
+        borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
         onTap: () => Navigator.pushNamed(context, routeName),
-        borderRadius: BorderRadius.circular(16), // Ini radius efek klik, biarkan saja
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

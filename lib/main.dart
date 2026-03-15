@@ -20,21 +20,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Tugas Kelompok',
       debugShowCheckedModeBanner: false,
-      
-     
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2563EB), 
+          seedColor: const Color(0xFF2563EB),
           brightness: Brightness.light,
         ),
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC), // Warna abu-abu sangat terang untuk background
-        
-        // Standarisasi AppBar: Bersih, tanpa bayangan (flat), teks tebal
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           backgroundColor: Color(0xFFF8FAFC),
-          scrolledUnderElevation: 0, // Mencegah perubahan warna saat di-scroll di M3
+          scrolledUnderElevation: 0,
           elevation: 0,
           iconTheme: IconThemeData(color: Color(0xFF0F172A)),
           titleTextStyle: TextStyle(
@@ -44,8 +40,6 @@ class MyApp extends StatelessWidget {
             letterSpacing: -0.5,
           ),
         ),
-        
-        // Standarisasi Tombol: Melengkung halus, padding luas, tanpa bayangan default
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             elevation: 0,
@@ -60,8 +54,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        
-        // Standarisasi Input TextField: Tampilan modern bergaya "filled"
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
@@ -81,8 +73,6 @@ class MyApp extends StatelessWidget {
           labelStyle: TextStyle(color: Colors.grey.shade600),
           prefixIconColor: Colors.grey.shade500,
         ),
-        
-        // Standarisasi Card
         cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -93,14 +83,11 @@ class MyApp extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
         ),
       ),
-
       initialRoute: '/login',
       routes: {
         '/login': (context) => const LoginPage(),
         '/home': (context) => const Homepages(),
-        // Catatan: Pastikan page di bawah ini sudah pakai 'const' di file aslinya 
-        // jika constructor mereka mendukungnya. Jika error, hapus 'const' di sini.
-        '/penjumlahan': (context) => const PenjumlahanPage(), 
+        '/penjumlahan': (context) => const PenjumlahanPage(),
         '/pengurangan': (context) => const PenguranganPage(),
         '/ganjil-genap': (context) => CheckEvenOddPage(),
         '/jumlah-angka': (context) => NumberInputPage(),

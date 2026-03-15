@@ -9,17 +9,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // PERBAIKAN: Namanya disesuaikan jadi usernameController agar sinkron dengan AuthLogic
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      // UX: Turunkan keyboard saat proses login berjalan
       FocusScope.of(context).unfocus();
 
-      bool isSuccess = AuthLogic.login(_usernameController.text, _passwordController.text);
+      bool isSuccess = AuthLogic.login(
+        _usernameController.text, 
+        _passwordController.text
+      );
 
       if (isSuccess) {
         Navigator.pushReplacementNamed(context, '/home');
@@ -27,9 +28,8 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text("Username atau Password salah!"),
-            // Gunakan warna error dari skema Material 3, bukan hardcode merah
             backgroundColor: Theme.of(context).colorScheme.error, 
-            behavior: SnackBarBehavior.floating, // Snackbar modern tidak nempel di bawah
+            behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
@@ -40,22 +40,21 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Warna background sudah otomatis mengikuti tema di main.dart
       body: Center(
-        child: SingleChildScrollView( // Mencegah overflow saat keyboard muncul
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400), // Agar tidak jelek kalau dibuka di tablet/web
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch, // Bikin tombol melebar penuh
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Icon(
                     Icons.lock_person_rounded, 
                     size: 80, 
-                    color: Theme.of(context).colorScheme.primary, // Ambil biru dari tema
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -77,13 +76,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 40),
-
-                  // Perhatikan betapa bersihnya input ini karena styling-nya 
-                  // sudah diambil alih oleh ThemeData di main.dart
                   TextFormField(
                     controller: _usernameController,
                     keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.next, // UX: Tombol 'Next' di keyboard
+                    textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.person_outline),
                       labelText: "Username",
@@ -93,12 +89,11 @@ class _LoginPageState extends State<LoginPage> {
                         : null,
                   ),
                   const SizedBox(height: 16),
-                  
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
-                    textInputAction: TextInputAction.done, // UX: Tombol 'Done' di keyboard
-                    onFieldSubmitted: (_) => _login(), // Bisa enter untuk login
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) => _login(),
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.lock_outline),
                       labelText: "Password",
@@ -108,7 +103,6 @@ class _LoginPageState extends State<LoginPage> {
                         : null,
                   ),
                   const SizedBox(height: 32),
-
                   ElevatedButton(
                     onPressed: _login,
                     child: const Text("MASUK"),
