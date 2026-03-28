@@ -63,7 +63,7 @@ void _checkNumber() {
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _checkNumber(),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*'))],
                         decoration: const InputDecoration(
                           labelText: "Masukkan Angka Bulat",
                           prefixIcon: Icon(Icons.numbers),
