@@ -45,11 +45,19 @@ class _StopwatchPageState extends State<StopwatchPage> {
     int hundreds = (milliseconds / 10).truncate();
     int seconds = (hundreds / 100).truncate();
     int minutes = (seconds / 60).truncate();
+    int hours = (minutes / 60).truncate();
+    int days = (hours / 24).truncate();
 
     String mStr = (minutes % 60).toString().padLeft(2, '0');
     String sStr = (seconds % 60).toString().padLeft(2, '0');
     String hStr = (hundreds % 100).toString().padLeft(2, '0');
+    String hourStr = (hours % 24).toString().padLeft(2, '0');
 
+    if (days > 0) {
+      return "${days}d $hourStr:$mStr:$sStr.$hStr";
+    } else if (hours > 0) {
+      return "$hourStr:$mStr:$sStr.$hStr";
+    }
     return "$mStr:$sStr.$hStr";
   }
 

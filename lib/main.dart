@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:tugas1/pages/loginpage.dart';
 import 'package:tugas1/pages/homepage.dart';
 import 'package:tugas1/pages/ganjilgenap_page.dart';
-import 'package:tugas1/pages/penjumlahan_page.dart';
-import 'package:tugas1/pages/pengurangan_page.dart';
+import 'package:tugas1/pages/kalkulator_page.dart';
 import 'package:tugas1/pages/jumlah_angka.dart';
 import 'package:tugas1/pages/stopwatch_page.dart';
 import 'package:tugas1/pages/piramid_page.dart';
+import 'package:tugas1/pages/weton_page.dart';
+import 'package:tugas1/pages/umur_page.dart';
+import 'package:tugas1/pages/hijriah_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -87,12 +89,14 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginPage(),
         '/home': (context) => const Homepages(),
-        '/penjumlahan': (context) => const PenjumlahanPage(),
-        '/pengurangan': (context) => const PenguranganPage(),
+        '/kalkulator': (context) => const KalkulatorPage(),
         '/ganjil-genap': (context) => CheckEvenOddPage(),
         '/jumlah-angka': (context) => NumberInputPage(),
         '/stopwatch': (context) => StopwatchPage(),
         '/piramid': (context) => const PiramidPage(),
+        '/weton': (context) => const WetonPage(),
+        '/umur': (context) => const UmurPage(),
+        '/hijriah': (context) => const HijriahPage(),
       },
     );
   }

@@ -19,7 +19,7 @@ class StopwatchService {
 
   void addLap() {
     if (_stopwatch.isRunning) {
-      _laps.insert(0, _stopwatch.elapsedMilliseconds); // Masukkan lap terbaru ke urutan teratas
+      _laps.insert(0, elapsedMilliseconds); // Masukkan lap terbaru ke urutan teratas
     }
   }
 

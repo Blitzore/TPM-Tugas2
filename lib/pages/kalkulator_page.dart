@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tugas1/utils/math_logic.dart';
 
-class PenguranganPage extends StatefulWidget {
-  const PenguranganPage({super.key});
+class KalkulatorPage extends StatefulWidget {
+  const KalkulatorPage({super.key});
 
   @override
-  State<PenguranganPage> createState() => _PenguranganPageState();
+  State<KalkulatorPage> createState() => _KalkulatorPageState();
 }
 
-class _PenguranganPageState extends State<PenguranganPage> {
+class _KalkulatorPageState extends State<KalkulatorPage> {
   final TextEditingController _angka1Controller = TextEditingController();
   final TextEditingController _angka2Controller = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   
   String _hasil = "-";
+  String _operasiPilihan = 'Tambah'; // 'Tambah' or 'Kurang'
 
   void _hitung() {
     FocusScope.of(context).unfocus(); 
@@ -23,14 +24,18 @@ class _PenguranganPageState extends State<PenguranganPage> {
       String input1 = _angka1Controller.text.replaceAll(',', '.');
       String input2 = _angka2Controller.text.replaceAll(',', '.');
 
-      // Memanggil fungsi pengurangan dari MathLogic
-      String result = MathLogic.subtract(input1, input2);
+      String result;
+      if (_operasiPilihan == 'Tambah') {
+        result = MathLogic.add(input1, input2);
+      } else {
+        result = MathLogic.subtract(input1, input2);
+      }
 
       setState(() {
         if (result == "Error") {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text("Input tidak valid. Pastikan hanya memasukkan angka."),
+              content: const Text("Input tidak valid."),
               backgroundColor: Theme.of(context).colorScheme.error,
               behavior: SnackBarBehavior.floating,
             ),
@@ -46,7 +51,7 @@ class _PenguranganPageState extends State<PenguranganPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Kalkulator Pengurangan")),
+      appBar: AppBar(title: const Text("Kalkulator Sederhana")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -62,7 +67,7 @@ class _PenguranganPageState extends State<PenguranganPage> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.remove_circle_outline, color: Theme.of(context).colorScheme.primary),
+                          Icon(Icons.calculate_outlined, color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 10),
                           const Text(
                             "Masukkan Angka", 
@@ -71,7 +76,6 @@ class _PenguranganPageState extends State<PenguranganPage> {
                         ],
                       ),
                       const Divider(height: 30),
-                      
                       TextFormField(
                         controller: _angka1Controller,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -81,12 +85,9 @@ class _PenguranganPageState extends State<PenguranganPage> {
                           labelText: "Angka Pertama",
                           prefixIcon: Icon(Icons.looks_one_outlined),
                         ),
-                        validator: (value) => value == null || value.trim().isEmpty 
-                            ? "Wajib diisi" 
-                            : null,
+                        validator: (value) => value == null || value.trim().isEmpty ? "Wajib diisi" : null,
                       ),
                       const SizedBox(height: 16),
-                      
                       TextFormField(
                         controller: _angka2Controller,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -94,28 +95,60 @@ class _PenguranganPageState extends State<PenguranganPage> {
                         onFieldSubmitted: (_) => _hitung(),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,\-]'))],
                         decoration: const InputDecoration(
-                          labelText: "Angka Pengurang",
+                          labelText: "Angka Kedua",
                           prefixIcon: Icon(Icons.looks_two_outlined),
                         ),
-                        validator: (value) => value == null || value.trim().isEmpty 
-                            ? "Wajib diisi" 
-                            : null,
+                        validator: (value) => value == null || value.trim().isEmpty ? "Wajib diisi" : null,
                       ),
                       const SizedBox(height: 24),
                       
+                      // Pilihan Operasi
+                      const Text("Pilih Operasi:", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: RadioListTile<String>(
+                              title: const Text("Tambah (+)"),
+                              value: 'Tambah',
+                              groupValue: _operasiPilihan,
+                              onChanged: (value) {
+                                setState(() {
+                                  _operasiPilihan = value!;
+                                  _hitung();
+                                });
+                              },
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          Expanded(
+                            child: RadioListTile<String>(
+                              title: const Text("Kurang (-)"),
+                              value: 'Kurang',
+                              groupValue: _operasiPilihan,
+                              onChanged: (value) {
+                                setState(() {
+                                  _operasiPilihan = value!;
+                                  _hitung();
+                                });
+                              },
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
                       ElevatedButton.icon(
                         onPressed: _hitung,
-                        icon: const Icon(Icons.calculate),
-                        label: const Text("KURANGKAN"),
+                        icon: const Icon(Icons.check),
+                        label: const Text("HITUNG"),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            
             const SizedBox(height: 24),
-            
             Card(
               color: Theme.of(context).colorScheme.primaryContainer,
               child: Padding(
@@ -123,11 +156,11 @@ class _PenguranganPageState extends State<PenguranganPage> {
                 child: Column(
                   children: [
                     Text(
-                      "Hasil Pengurangan",
+                      "Hasil",
                       style: TextStyle(
                         fontSize: 14, 
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.7)
+                        color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7)
                       ),
                     ),
                     const SizedBox(height: 12),

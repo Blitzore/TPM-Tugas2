@@ -4,8 +4,10 @@ import 'package:decimal/decimal.dart';
 class MathLogic {
   // Mengecek apakah angka terakhir ganjil atau genap
   static String checkParity(String input) {
-    if (input.isEmpty) return "0";
-    int lastDigit = int.parse(input[input.length - 1]);
+    if (input.replaceAll('-', '').isEmpty) return "0";
+    String cleanInput = input.replaceAll(RegExp(r'\D'), '');
+    if (cleanInput.isEmpty) return "0";
+    int lastDigit = int.parse(cleanInput[cleanInput.length - 1]);
     return lastDigit % 2 == 0 ? "Genap" : "Ganjil";
   }
 
@@ -48,6 +50,11 @@ class MathLogic {
     return true;
   }
 
+  // Menghitung total digit angka yang ada di dalam string
+  static int countNumbersInString(String input) {
+    return input.replaceAll(RegExp(r'\D'), '').length;
+  }
+  
   // Menghitung kemunculan setiap digit angka dalam string
   static Map<String, int> getDigitFrequency(String input) {
     Map<String, int> freq = {};
@@ -61,10 +68,16 @@ class MathLogic {
     return {for (var k in sortedKeys) k: freq[k]!};
   }
 
-  // Menghitung total digit angka yang ada di dalam string
-  static int countNumbersInString(String input) {
-    return input.replaceAll(RegExp(r'\D'), '').length;
+  // Menjumlahkan angka (puluhan/ratusan dll) secara berurutan dalam string
+  static int sumNumbersInString(String input) {
+    int sum = 0;
+    Iterable<Match> matches = RegExp(r'\d+').allMatches(input);
+    for (final match in matches) {
+      sum += int.parse(match.group(0)!);
+    }
+    return sum;
   }
+
 
   // Operasi aritmatika dengan presisi tinggi (Decimal)
   static String add(String a, String b) {

@@ -11,11 +11,13 @@ class NumberInputPage extends StatefulWidget {
 class _NumberInputPageState extends State<NumberInputPage> {
   final TextEditingController _controller = TextEditingController();
   int _numberCount = 0;
+  int _totalValue = 0;
   Map<String, int> _digitFrequency = {};
 
   void _analyzeInput(String input) {
     setState(() {
       _numberCount = MathLogic.countNumbersInString(input);
+      _totalValue = MathLogic.sumNumbersInString(input);
       _digitFrequency = MathLogic.getDigitFrequency(input);
     });
   }
@@ -49,7 +51,7 @@ class _NumberInputPageState extends State<NumberInputPage> {
                       decoration: const InputDecoration(
                         labelText: "Ketik teks apa saja...",
                         prefixIcon: Icon(Icons.text_fields),
-                        hintText: "Contoh: tugas 2 tpm 2026",
+                        hintText: "1234567890",
                       ),
                       onChanged: _analyzeInput,
                     ),
@@ -66,10 +68,35 @@ class _NumberInputPageState extends State<NumberInputPage> {
                 color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Column(
+              child: Row(
                 children: [
-                  Text("Total Digit", style: TextStyle(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onPrimaryContainer)),
-                  Text(_numberCount.toString(), style: TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary, height: 1.1)),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: [
+                          Text("Total Digit", style: TextStyle(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                          Text(_numberCount.toString(), style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary, height: 1.1)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 50,
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: [
+                          Text("Total Nilai", style: TextStyle(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                          Text(_totalValue.toString(), style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary, height: 1.1)),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
