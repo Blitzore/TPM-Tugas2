@@ -1,37 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:tugas1/utils/date_logic.dart';
+import 'package:tugas1/utils/saka_calendar.dart';
 
-class WetonPage extends StatefulWidget {
-  const WetonPage({super.key});
+class SakaPage extends StatefulWidget {
+  const SakaPage({super.key});
 
   @override
-  State<WetonPage> createState() => _WetonPageState();
+  State<SakaPage> createState() => _SakaPageState();
 }
 
-class _WetonPageState extends State<WetonPage> {
+class _SakaPageState extends State<SakaPage> {
   DateTime? _selectedDate;
-  String _hasilHariWeton = "-";
-  String _hasilTanggalJawa = "-";
-  JawaDateSourceMode _jawaSourceMode = JawaDateSourceMode.almnk;
+  String _hasilSaka = '-';
+  SakaCalendarSystem _selectedSystem = SakaCalendarSystem.india;
 
-  String _modeLabel(JawaDateSourceMode mode) {
-    switch (mode) {
-      case JawaDateSourceMode.almnk:
-        return "ALMNK (kalibrasi historis)";
-      case JawaDateSourceMode.hijriMurni:
-        return "Hijri murni";
+  String _systemLabel(SakaCalendarSystem system) {
+    switch (system) {
+      case SakaCalendarSystem.india:
+        return 'Saka India';
+      case SakaCalendarSystem.bali:
+        return 'Saka Bali';
     }
   }
 
-  void _updateResult(DateTime date) {
-    _hasilHariWeton = DateLogic.getHariWeton(date);
-    _hasilTanggalJawa = DateLogic.getTanggalJawa(date, mode: _jawaSourceMode);
+  void _updateHasil() {
+    if (_selectedDate == null) return;
+    setState(() {
+      _hasilSaka = DateLogic.getSakaDate(
+        _selectedDate!,
+        system: _selectedSystem,
+      );
+    });
   }
 
   void _pickDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
     );
@@ -39,7 +44,7 @@ class _WetonPageState extends State<WetonPage> {
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _updateResult(picked);
+        _hasilSaka = DateLogic.getSakaDate(picked, system: _selectedSystem);
       });
     }
   }
@@ -47,7 +52,7 @@ class _WetonPageState extends State<WetonPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Konversi Hari & Weton")),
+      appBar: AppBar(title: const Text('Konversi Kalender Saka')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -62,12 +67,12 @@ class _WetonPageState extends State<WetonPage> {
                     Row(
                       children: [
                         Icon(
-                          Icons.calendar_today,
+                          Icons.temple_hindu,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 10),
                         const Text(
-                          "Pilih Tanggal Masuk",
+                          'Pilih Tanggal Masehi',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -81,34 +86,30 @@ class _WetonPageState extends State<WetonPage> {
                       icon: const Icon(Icons.date_range),
                       label: Text(
                         _selectedDate != null
-                            ? "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}"
-                            : "Tekan untuk Pilih Tanggal",
+                            ? '${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}'
+                            : 'Tekan untuk Pilih Tanggal',
                       ),
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<JawaDateSourceMode>(
-                      initialValue: _jawaSourceMode,
+                    DropdownButtonFormField<SakaCalendarSystem>(
+                      initialValue: _selectedSystem,
                       decoration: const InputDecoration(
-                        labelText: "Sumber tanggal Jawa",
-                        border: OutlineInputBorder(),
+                        labelText: 'Metode Perhitungan Saka',
+                        prefixIcon: Icon(Icons.tune),
                       ),
                       items:
-                          JawaDateSourceMode.values
+                          SakaCalendarSystem.values
                               .map(
-                                (mode) => DropdownMenuItem(
-                                  value: mode,
-                                  child: Text(_modeLabel(mode)),
+                                (system) => DropdownMenuItem(
+                                  value: system,
+                                  child: Text(_systemLabel(system)),
                                 ),
                               )
                               .toList(),
                       onChanged: (value) {
                         if (value == null) return;
-                        setState(() {
-                          _jawaSourceMode = value;
-                          if (_selectedDate != null) {
-                            _updateResult(_selectedDate!);
-                          }
-                        });
+                        _selectedSystem = value;
+                        _updateHasil();
                       },
                     ),
                   ],
@@ -123,53 +124,38 @@ class _WetonPageState extends State<WetonPage> {
                 child: Column(
                   children: [
                     Text(
-                      "Hari & Pasaran",
+                      'Hasil Tanggal Saka',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(
                           context,
-                        ).colorScheme.onPrimaryContainer.withOpacity(0.7),
+                        ).colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
                       ),
                     ),
                     const SizedBox(height: 12),
                     SelectableText(
-                      _hasilHariWeton,
+                      _hasilSaka,
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
                         letterSpacing: -1.0,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 16),
-                    Text(
-                      "Tanggal Jawa / Pranata Mangsa",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onPrimaryContainer.withOpacity(0.7),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SelectableText(
-                      _hasilTanggalJawa,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        letterSpacing: -0.5,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
                   ],
                 ),
               ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Catatan: Mode India memakai kalender nasional India, mode Bali memakai padanan nama bulan Bali.',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
