@@ -1,20 +1,50 @@
 import 'package:hijri/hijri_calendar.dart';
+import 'package:tugas1/utils/saka_calendar.dart';
+
+enum JawaDateSourceMode { almnk, hijriMurni }
 
 class DateLogic {
-  static const List<String> pasaranJawa = ['Kliwon', 'Legi', 'Pahing', 'Pon', 'Wage'];
-  static const List<String> hariMasehi = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-  static const List<String> wulanJawa = ['Suro', 'Sapar', 'Mulud', 'Bakda Mulud', 'Jumadil Awal', 'Jumadil Akhir', 'Rejeb', 'Ruwah', 'Pasa', 'Sawal', 'Sela', 'Besar'];
+  static const List<String> pasaranJawa = [
+    'Kliwon',
+    'Legi',
+    'Pahing',
+    'Pon',
+    'Wage',
+  ];
+  static const List<String> hariMasehi = [
+    'Minggu',
+    'Senin',
+    'Selasa',
+    'Rabu',
+    'Kamis',
+    'Jumat',
+    'Sabtu',
+  ];
+  static const List<String> wulanJawa = [
+    'Suro',
+    'Sapar',
+    'Mulud',
+    'Bakda Mulud',
+    'Jumadil Awal',
+    'Jumadil Akhir',
+    'Rejeb',
+    'Ruwah',
+    'Pasa',
+    'Sawal',
+    'Sela',
+    'Besar',
+  ];
 
   // Konversi tanggal ke Hari & Weton
   static String getHariWeton(DateTime date) {
     // 1 Jan 1970 adalah Kamis (Wage)
     // DateTime.weekday: 1 (Senin) -> 7 (Minggu)
     int hariIndex = date.weekday % 7; // 0=Minggu, 1=Senin...
-    
+
     // Perhitungan Weton (Pasaran) berdasarkan selisih hari dari Epoch (1 Jan 1970)
     DateTime epoch = DateTime(1970, 1, 1);
     int diffDays = date.difference(epoch).inDays;
-    
+
     // 1 Jan 1970 = Wage (index 4 di array pasaran)
     int pasaranIndex = (diffDays + 4) % 5;
     if (pasaranIndex < 0) pasaranIndex += 5; // Handle before 1970
@@ -23,17 +53,34 @@ class DateLogic {
   }
 
   // Konversi Masehi ke Tanggal Jawa (Berdasarkan Kalender Hijriah + Offset 512 Tahun)
-  static String getTanggalJawa(DateTime date) {
-    var hDate = HijriCalendar.fromDate(date);
+  // Format: Tanggal Jawa (Tanggal Masehi)
+  static String getTanggalJawa(
+    DateTime date, {
+    JawaDateSourceMode mode = JawaDateSourceMode.almnk,
+  }) {
+    int correctionDays;
+    switch (mode) {
+      case JawaDateSourceMode.hijriMurni:
+        correctionDays = 0;
+        break;
+      case JawaDateSourceMode.almnk:
+        correctionDays = date.isBefore(DateTime(1950, 1, 1)) ? 2 : 1;
+        break;
+    }
+
+    final adjustedDate = date.subtract(Duration(days: correctionDays));
+    var hDate = HijriCalendar.fromDate(adjustedDate);
     int jYear = hDate.hYear + 512;
     int jMonthIndex = hDate.hMonth - 1; // 1-based to 0-based
-    return "${hDate.hDay} ${wulanJawa[jMonthIndex]} $jYear";
+    String tanggalJawa = "${hDate.hDay} ${wulanJawa[jMonthIndex]} $jYear";
+    String tanggalMasehi = "${date.day}/${date.month}/${date.year}";
+    return "$tanggalJawa ($tanggalMasehi)";
   }
 
   // Hitung Umur Detail
   static Map<String, int> getDetailUmur(DateTime birthDate) {
     DateTime now = DateTime.now();
-    
+
     if (birthDate.isAfter(now)) {
       return {'tahun': 0, 'bulan': 0, 'hari': 0, 'jam': 0, 'menit': 0};
     }
@@ -77,5 +124,14 @@ class DateLogic {
     var adjustedDate = date.add(Duration(days: adjustment));
     var hDate = HijriCalendar.fromDate(adjustedDate);
     return hDate.toFormat("dd MMMM yyyy");
+  }
+
+  // Konversi Masehi ke Kalender Saka (Indian National Calendar)
+  static String getSakaDate(
+    DateTime date, {
+    SakaCalendarSystem system = SakaCalendarSystem.india,
+  }) {
+    final SakaDate sakaDate = SakaCalendar.fromGregorian(date, system: system);
+    return sakaDate.format(system: system);
   }
 }

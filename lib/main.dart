@@ -9,6 +9,7 @@ import 'package:tugas1/pages/piramid_page.dart';
 import 'package:tugas1/pages/weton_page.dart';
 import 'package:tugas1/pages/umur_page.dart';
 import 'package:tugas1/pages/hijriah_page.dart';
+import 'package:tugas1/pages/saka_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,7 +60,10 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 16,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -97,6 +101,7 @@ class MyApp extends StatelessWidget {
         '/weton': (context) => const WetonPage(),
         '/umur': (context) => const UmurPage(),
         '/hijriah': (context) => const HijriahPage(),
+        '/saka': (context) => const SakaPage(),
       },
     );
   }

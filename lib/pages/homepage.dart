@@ -7,35 +7,42 @@ class Homepages extends StatelessWidget {
   Future<void> _showExitDialog(BuildContext context) async {
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Keluar Aplikasi?"),
-        content: const Text("Apakah Anda yakin ingin keluar dari aplikasi Tugas Kelompok?"),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(), 
-            child: const Text("Batal"),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Keluar Aplikasi?"),
+            content: const Text(
+              "Apakah Anda yakin ingin keluar dari aplikasi Tugas Kelompok?",
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Batal"),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  SystemNavigator.pop();
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+                child: const Text("Keluar"),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              SystemNavigator.pop(); 
-            },
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
-            child: const Text("Keluar"),
-          ),
-        ],
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, 
+      canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) {
         if (didPop) return;
-        _showExitDialog(context); 
+        _showExitDialog(context);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -44,13 +51,17 @@ class Homepages extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.redAccent),
               tooltip: 'Logout',
-              onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+              onPressed:
+                  () => Navigator.pushReplacementNamed(context, '/login'),
             ),
           ],
         ),
         body: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 10.0,
+            ),
             physics: const BouncingScrollPhysics(),
             children: [
               Container(
@@ -74,12 +85,20 @@ class Homepages extends StatelessWidget {
                         Icon(Icons.diversity_3, color: Colors.white, size: 24),
                         SizedBox(width: 10),
                         Text(
-                          "Tim Pengembang", 
-                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
+                          "Tim Pengembang",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
-                    const Divider(color: Colors.white30, height: 24, thickness: 1),
+                    const Divider(
+                      color: Colors.white30,
+                      height: 24,
+                      thickness: 1,
+                    ),
                     _buildMemberText("Gilang Restu Maulana", "123230060"),
                     _buildMemberText("Ahmad Habib Hamidi", "123230077"),
                     _buildMemberText("Raymond Agung R.", "123230129"),
@@ -89,12 +108,12 @@ class Homepages extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               Text(
-                "Menu Kalkulasi", 
+                "Menu Kalkulasi",
                 style: TextStyle(
-                  fontSize: 18, 
-                  fontWeight: FontWeight.bold, 
-                  color: Theme.of(context).colorScheme.onSurface
-                )
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               const SizedBox(height: 16),
               GridView.count(
@@ -105,14 +124,55 @@ class Homepages extends StatelessWidget {
                 mainAxisSpacing: 16,
                 childAspectRatio: 1.1,
                 children: [
-                  _buildMenuCard(context, Icons.calculate_outlined, "Kalkulator", '/kalkulator'),
-                  _buildMenuCard(context, Icons.format_list_numbered, "Total Angka", '/jumlah-angka'),
-                  _buildMenuCard(context, Icons.rule, "Ganjil/Genap & Prisma", '/ganjil-genap'),
-                  _buildMenuCard(context, Icons.change_history, "Piramida", '/piramid'),
-                  _buildMenuCard(context, Icons.timer, "Stopwatch", '/stopwatch'),
-                  _buildMenuCard(context, Icons.calendar_today, "Hari & Weton", '/weton'),
+                  _buildMenuCard(
+                    context,
+                    Icons.calculate_outlined,
+                    "Kalkulator",
+                    '/kalkulator',
+                  ),
+                  _buildMenuCard(
+                    context,
+                    Icons.format_list_numbered,
+                    "Total Angka",
+                    '/jumlah-angka',
+                  ),
+                  _buildMenuCard(
+                    context,
+                    Icons.rule,
+                    "Ganjil/Genap & Prisma",
+                    '/ganjil-genap',
+                  ),
+                  _buildMenuCard(
+                    context,
+                    Icons.change_history,
+                    "Piramida",
+                    '/piramid',
+                  ),
+                  _buildMenuCard(
+                    context,
+                    Icons.timer,
+                    "Stopwatch",
+                    '/stopwatch',
+                  ),
+                  _buildMenuCard(
+                    context,
+                    Icons.calendar_today,
+                    "Hari & Weton",
+                    '/weton',
+                  ),
                   _buildMenuCard(context, Icons.cake, "Hitung Umur", '/umur'),
-                  _buildMenuCard(context, Icons.mosque, "Tanggal Hijriah", '/hijriah'),
+                  _buildMenuCard(
+                    context,
+                    Icons.mosque,
+                    "Tanggal Hijriah",
+                    '/hijriah',
+                  ),
+                  _buildMenuCard(
+                    context,
+                    Icons.temple_hindu,
+                    "Kalender Saka",
+                    '/saka',
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -129,14 +189,33 @@ class Homepages extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(name, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
-          Text(nim, style: const TextStyle(color: Colors.white70, fontSize: 13, fontFamily: 'monospace')),
+          Text(
+            name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            nim,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontFamily: 'monospace',
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMenuCard(BuildContext context, IconData icon, String title, String routeName) {
+  Widget _buildMenuCard(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String routeName,
+  ) {
     return Material(
       color: Colors.white,
       elevation: 0,
@@ -158,13 +237,20 @@ class Homepages extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primaryContainer,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 28, color: Theme.of(context).colorScheme.primary),
+                child: Icon(
+                  icon,
+                  size: 28,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
               const Spacer(),
               Text(
-                title, 
+                title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
